@@ -1,0 +1,100 @@
+from datetime import datetime
+from typing import Optional, Dict, Any
+
+def get_weather(location: Optional[str] = None) -> Dict[str, Any]:
+    """
+    Get current weather information (dummy data)
+
+    Args:
+        location: Optional location to get weather for
+
+    Returns:
+        Dictionary containing weather information
+    """
+    # Dummy weather data
+    weather_data = {
+        "location": location or "New York",
+        "temperature": 72,
+        "unit": "Fahrenheit",
+        "condition": "Partly Cloudy",
+        "humidity": 65,
+        "wind_speed": 8,
+        "wind_direction": "NW",
+        "pressure": 1013,
+        "visibility": 10,
+        "timestamp": datetime.now().isoformat(),
+        "forecast": {
+            "today": "Sunny with scattered clouds",
+            "tomorrow": "Partly cloudy with chance of rain",
+            "day_after": "Clear skies"
+        }
+    }
+
+    return {
+        "success": True,
+        "data": weather_data,
+        "message": f"Weather information retrieved for {weather_data['location']}"
+    }
+
+def get_time(timezone: Optional[str] = None) -> Dict[str, Any]:
+    """
+    Get current time information (dummy data)
+    
+    Args:
+        timezone: Optional timezone to get time for
+        
+    Returns:
+        Dictionary containing time information
+    """
+    # Get current time
+    now = datetime.now()
+    
+    # Dummy timezone data
+    timezone_data = {
+        "current_time": now.strftime("%H:%M:%S"),
+        "current_date": now.strftime("%Y-%m-%d"),
+        "timezone": timezone or "UTC",
+        "day_of_week": now.strftime("%A"),
+        "timestamp": now.isoformat(),
+        "unix_timestamp": int(now.timestamp()),
+        "timezone_offset": "+00:00" if timezone == "UTC" else "-05:00",
+        "is_daylight_saving": False
+    }
+    
+    return {
+        "success": True,
+        "data": timezone_data,
+        "message": f"Current time in {timezone_data['timezone']}: {timezone_data['current_time']}"
+    }
+
+def get_place_description(location: Optional[str] = None) -> Dict[str, Any]:
+    """
+    Get a short description about a place (dummy data)
+    
+    Args:
+        location: Name of the place to describe
+        
+    Returns:
+        Dictionary containing a short description about the place
+    """
+    # Dummy descriptions for demonstration
+    dummy_descriptions = {
+        "New York": "New York is a bustling metropolis known for its iconic skyline, diverse culture, and vibrant city life.",
+        "London": "London is the capital of England, famous for its rich history, royal landmarks, and cosmopolitan atmosphere.",
+        "Tokyo": "Tokyo is Japan's capital, renowned for its blend of modern skyscrapers, historic temples, and unique cuisine.",
+        "Paris": "Paris, the city of lights, is celebrated for its art, fashion, gastronomy, and the Eiffel Tower.",
+        "Sydney": "Sydney is a coastal city in Australia, known for its stunning harbor, Opera House, and beautiful beaches."
+    }
+    default_description = "A wonderful place with its own unique charm and attractions."
+
+    place = location or "Unknown location"
+    description = dummy_descriptions.get(place, default_description)
+
+    return {
+        "success": True,
+        "data": {
+            "location": place,
+            "description": description
+        },
+        "message": f"Description for {place} retrieved successfully."
+    }

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather MCP Tools</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f8fb;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+            padding: 32px 24px;
+        }
+        h1 {
+            text-align: center;
+            color: #2a5d8f;
+            margin-bottom: 24px;
+        }
+        .tool-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .tool {
+            border: 1px solid #e0e7ef;
+            border-radius: 8px;
+            padding: 18px 20px;
+            background: #f9fbfd;
+            transition: box-shadow 0.2s;
+        }
+        .tool:hover {
+            box-shadow: 0 2px 8px rgba(42,93,143,0.08);
+        }
+        .tool-name {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #1a3a5d;
+        }
+        .tool-desc {
+            color: #4a6a8a;
+            margin: 8px 0 10px 0;
+        }
+        .tool-params {
+            font-size: 0.97em;
+            color: #2a5d8f;
+        }
+        .param-list {
+            margin: 0;
+            padding-left: 18px;
+        }
+        .error {
+            color: #c0392b;
+            text-align: center;
+            margin-top: 20px;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 12px 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Weather MCP Tools</h1>
+        <button id="reload-btn" style="display:block;margin:0 auto 24px auto;padding:10px 24px;background:#2a5d8f;color:#fff;border:none;border-radius:6px;font-size:1em;cursor:pointer;">
+            Reload Tools
+        </button>
+        <div id="tool-list" class="tool-list"></div>
+        <div id="error" class="error"></div>
+    </div>
+    <script>
+        async function fetchTools() {
+            try {
+                // Change the URL if your backend is hosted elsewhere
+                const response = await fetch('http://localhost:3001/tools');
+                if (!response.ok) throw new Error('Failed to fetch tools');
+                const data = await response.json();
+                renderTools(data.tools);
+            } catch (err) {
+                document.getElementById('error').textContent = err.message;
+            }
+        }
+
+        function renderTools(tools) {
+            const list = document.getElementById('tool-list');
+            list.innerHTML = '';
+            if (!tools || Object.keys(tools).length === 0) {
+                list.innerHTML = '<p>No tools available.</p>';
+                return;
+            }
+            Object.entries(tools).forEach(([name, info]) => {
+                const toolDiv = document.createElement('div');
+                toolDiv.className = 'tool';
+                toolDiv.innerHTML = `
+                    <div class="tool-name">${name}</div>
+                    <div class="tool-desc">${info.description || 'No description.'}</div>
+                    <div class="tool-params">
+                        <strong>Parameters:</strong>
+                        ${info.parameters && info.parameters.properties && Object.keys(info.parameters.properties).length > 0
+                            ? `<ul class="param-list">${Object.entries(info.parameters.properties).map(([p, v]) => `<li><b>${p}</b> (${v.type}): ${v.description}</li>`).join('')}</ul>`
+                            : 'None'}
+                    </div>
+                `;
+                list.appendChild(toolDiv);
+            });
+        }
+
+        fetchTools();
+
+        document.getElementById('reload-btn').onclick = async function() {
+            document.getElementById('error').textContent = '';
+            try {
+                const response = await fetch('http://localhost:3001/reload_tools', { method: 'POST' });
+                const data = await response.json();
+                if (!data.success) throw new Error(data.message || 'Reload failed');
+                fetchTools();
+            } catch (err) {
+                document.getElementById('error').textContent = err.message;
+            }
+        };
+    </script>
+</body>
+</html> 
