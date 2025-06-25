@@ -61,7 +61,8 @@ def subtract_number(a: float, b: float) -> Dict[str, Any]:
 
 # Tool registry for MCP server
 CALCULATOR_TOOLS = {
-            "function": add_number,
+    "addNumber": {
+        "function": add_number,
         "description": "Add two numbers together",
         "parameters": {
             "type": "object",
